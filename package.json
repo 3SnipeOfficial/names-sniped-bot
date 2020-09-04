@@ -1,0 +1,24 @@
+{
+  "name": "names-sniped-bot",
+  "version": "1.0.0",
+  "description": "for 3snipe",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/3SnipeOfficial/names-sniped-bot.git"
+  },
+  "author": "lolwhenlifegivesyoulemons",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/3SnipeOfficial/names-sniped-bot/issues"
+  },
+  "homepage": "https://github.com/3SnipeOfficial/names-sniped-bot#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "eris": "^0.13.3",
+    "puppeteer": "^5.2.1"
+  }
+}
