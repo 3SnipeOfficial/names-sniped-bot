@@ -14,7 +14,7 @@ bot.on("messageCreate", (msg) => {
     	bot.getMessages("736993036319588362", 1000)
 			.then((messages)=>{
 				if (messages.filter((a)=>a.content.toLowerCase().includes(msg.content.toLowerCase()))[0]) {
-					console.log(`${msg.author.username}#${msg.author.discriminator} has tried to resubmit a already existing name! (${msg.content})`); 
+					console.log(`${msg.author.username}#${msg.author.discriminator} has tried to resubmit a already existing name (${msg.content})!`); 
 					return msg.author.getDMChannel().then((user)=>{
 						user.createMessage('You cannot submit an already submitted name.')
 					});
@@ -30,13 +30,19 @@ bot.on("messageCreate", (msg) => {
 					  	'value': 'dark'
 					  }];
 					  await page.setCookie(...cookies);
-					  await page.reload()
-					  await page.click('[data-original-title=Discord]');
+					  await page.reload();
+					  await page.click('[data-original-title=Discord]').catch(()=>{
+					  	bot.getDMChannel(msg.author.id)
+					  		.then((user)=>{
+					  			user.createMessage(`Sorry, your name \`${msg.content}\` doesn't have a discord linked! Please link it at NameMC and try again.`);
+					  		});
+					  	throw new Error("No discord linked for "+msg.content+"! Sent a DM to them notifying them.");
+					  });
 					  await page.screenshot({path: 'screenshot.png'});
 					  const element = await page.$('.text-md-left');
 					  let text = await page.evaluate(element => element.innerHTML.split('content="')[1].split('"')[0], element);
 					  console.log('discord verification in progress...');
-					  if (text.includes('3snipe')) {
+					  if (text.toLowerCase().includes('3snipe')) {
 					  	fs.readFile('./screenshot.png', function read(err, data) {
 						    if (err) {
 						        throw err;
@@ -59,7 +65,13 @@ bot.on("messageCreate", (msg) => {
 					        		msg.addReaction('🚫');
 					        	})
 						});
-					  };
+					  } else {
+					  	console.log(`${msg.author.username}#${msg.author.discriminator} attempted to submit a name (${msg.content}) that doesn't include 3snipe! I've sent a DM to them.`);
+					  	bot.getDMChannel(msg.author.id)
+					  		.then((user)=>{
+					  			user.createMessage(`Sorry, your discord for the name \`${msg.content}\` doesn't include 3snipe in it, please change it and try again.`);
+					  		});
+					  }
 					  await browser.close();
 					})();
 				}
@@ -76,7 +88,7 @@ bot.on("messageReactionAdd", (message, emoji, userId)=>{
 			bot.createMessage(message.channel.id, "Sent successfully! A DM has been sent to "+message.embeds[0].description.split(' ')[0]+".");
 			bot.getDMChannel(message.embeds[0].description.split('>')[0].split('<@')[1])
 				.then((user)=>{	
-					user.createMessage(`Your submission for ${message.embeds[0].title} has been approved!`)
+					user.createMessage(`Your submission for \`${message.embeds[0].title}\` has been approved!`)
 						.catch((e)=>{
 							bot.createMessage(message.channel.id, "Direct messages are off for "+$message.embeds[0].description.split(' ')[0]+".");
 						})
@@ -88,7 +100,7 @@ bot.on("messageReactionAdd", (message, emoji, userId)=>{
 			bot.createMessage(message.channel.id, `Denied ${message.embeds[0].description.split(' ')[0]}. A DM has been sent to them.`);
 			bot.getDMChannel(message.embeds[0].description.split('>')[0].split('<@')[1])
 				.then((user)=>{
-					user.createMessage(`Your submission for ${message.embeds[0].title} has been denied.`)
+					user.createMessage(`Your submission for \`${message.embeds[0].title}\` has been denied.`)
 						.catch((e)=>{
 							bot.createMessage(message.channel.id, "Direct messages are off for "+message.embeds[0].description.split(' ')[0]+".");
 						})
