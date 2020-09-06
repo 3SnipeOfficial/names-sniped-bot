@@ -8,6 +8,9 @@ let content;
 bot.on("ready", () => {
     console.log(`ready! i am ${bot.user.username}#${bot.user.discriminator}`);
 });
+bot.on("error", (err) => {
+    console.warn('bot restarted due to '+err)
+})
 bot.on("messageCreate", (msg) => {
     if(msg.channel.id == 751301214175625216) {
     	msg.delete('names-sniped-bot: Deleted automatically!');
